@@ -1,0 +1,340 @@
+<?php
+
+/**
+ * Implements hook_services_resources().
+ */
+function boa_service_services_resources() {
+	return array(
+		'boa' => array(
+			'actions' => array(
+				'datasets' => array(
+					'help' => 'List all available input datasets.',
+					'callback' => '_datasets_rpc',
+					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'run'),
+					'access callback' => 'boa_user_access',
+				),
+				'job' => array(
+					'help' => 'Get a specific job.',
+					'callback' => '_job_rpc',
+					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'jobs'),
+					'access callback' => 'boa_user_access',
+					'args' => array(
+						array(
+							'description' => 'The id of the job to resubmit.',
+							'name' => 'id',
+							'type' => 'int',
+							'source' => array('path' => '0'),
+							'optional' => FALSE,
+						),
+					),
+				),
+				'jobs' => array(
+					'help' => 'List all of the jobs.',
+					'callback' => '_jobs_rpc',
+					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'jobs'),
+					'access callback' => 'boa_user_access',
+					'args' => array(
+						array(
+							'description' => 'Count only public jobs.',
+							'name' => 'public',
+							'type' => 'bool',
+							'source' => array('path' => '0'),
+							'optional' => FALSE,
+						),
+					),
+				),
+				'range' => array(
+					'help' => 'List of the jobs for a specified range.',
+					'callback' => '_jobs_range_rpc',
+					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'jobs'),
+					'access callback' => 'boa_user_access',
+					'args' => array(
+						array(
+							'description' => 'Count only public jobs.',
+							'name' => 'public',
+							'type' => 'bool',
+							'source' => array('path' => '0'),
+							'optional' => FALSE,
+						),
+						array(
+							'description' => 'The starting offset.',
+							'name' => 'offset',
+							'type' => 'int',
+							'source' => array('path' => '1'),
+							'optional' => FALSE,
+						),
+						array(
+							'description' => 'Maximum number of results.',
+							'name' => 'length',
+							'type' => 'int',
+							'source' => array('path' => '2'),
+							'optional' => FALSE,
+						),
+					),
+				),
+				'count' => array(
+					'help' => 'Get the count of the users jobs.',
+					'callback' => '_jobs_count_rpc',
+					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'jobs'),
+					'access callback' => 'boa_user_access',
+					'args' => array(
+						array(
+							'description' => 'Count only public jobs.',
+							'name' => 'public',
+							'type' => 'bool',
+							'source' => array('path' => '0'),
+							'optional' => FALSE,
+						),
+					),
+				),
+				'submit' => array(
+					'help' => 'Submit a new Boa query.',
+					'callback' => '_run_rpc',
+					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'run'),
+					'access callback' => 'boa_user_access',
+					'args' => array(
+						array(
+							'description' => 'The query source code.',
+							'name' => 'source',
+							'type' => 'string',
+							'source' => array('path' => '0'),
+							'optional' => FALSE,
+						),
+						array(
+							'description' => 'The input dataset to query.',
+							'name' => 'input',
+							'type' => 'int',
+							'source' => array('path' => '1'),
+							'optional' => FALSE,
+						),
+					),
+				),
+			),
+		),
+		'job' => array(
+			'actions' => array(
+				'stop' => array(
+					'help' => 'Stop a specific job, if it is running.',
+					'callback' => '_job_stop_rpc',
+					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'job.stop'),
+					'access callback' => 'boa_job_running_access',
+					'access arguments append' => TRUE,
+					'args' => array(
+						array(
+							'description' => 'The id of the job to stop.',
+							'name' => 'id',
+							'type' => 'int',
+							'source' => array('path' => '0'),
+							'optional' => FALSE,
+						),
+					),
+				),
+				'resubmit' => array(
+					'help' => 'Resubmits a specific job.',
+					'callback' => '_job_resubmit_rpc',
+					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'job.resubmit'),
+					'access callback' => 'boa_job_resubmit_access',
+					'access arguments append' => TRUE,
+					'args' => array(
+						array(
+							'description' => 'The id of the job to resubmit.',
+							'name' => 'id',
+							'type' => 'int',
+							'source' => array('path' => '0'),
+							'optional' => FALSE,
+						),
+					),
+				),
+				'delete' => array(
+					'help' => 'Deletes a specific job.',
+					'callback' => '_job_delete_rpc',
+					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'job.delete'),
+					'access callback' => 'boa_job_not_deleted_access',
+					'access arguments append' => TRUE,
+					'args' => array(
+						array(
+							'description' => 'The id of the job to delete.',
+							'name' => 'id',
+							'type' => 'int',
+							'source' => array('path' => '0'),
+							'optional' => FALSE,
+						),
+					),
+				),
+				'source' => array(
+					'help' => 'Get the jobs source query.',
+					'callback' => '_job_source_rpc',
+					'access callback' => 'boa_job_not_deleted_access',
+					'access arguments append' => TRUE,
+					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'job.download.src'),
+					'args' => array(
+						array(
+							'description' => 'The id of the job to query.',
+							'name' => 'id',
+							'type' => 'int',
+							'source' => array('path' => '0'),
+							'optional' => FALSE,
+						),
+					),
+				),
+				'setpublic' => array(
+					'help' => 'Marks a job public/private.',
+					'callback' => '_job_setpublic_rpc',
+					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'job.public'),
+					'access callback' => 'boa_job_not_deleted_access',
+					'access arguments append' => TRUE,
+					'args' => array(
+						array(
+							'description' => 'The id of the job to query.',
+							'name' => 'id',
+							'type' => 'int',
+							'source' => array('path' => '0'),
+							'optional' => FALSE,
+						),
+						array(
+							'description' => 'Set public (true) or private (false).',
+							'name' => 'public',
+							'type' => 'bool',
+							'source' => array('path' => '1'),
+							'optional' => FALSE,
+						),
+					),
+				),
+				'public' => array(
+					'help' => 'Is this job marked public?',
+					'callback' => '_job_public_rpc',
+					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'job.public'),
+					'access callback' => 'boa_job_not_deleted_access',
+					'access arguments append' => TRUE,
+					'args' => array(
+						array(
+							'description' => 'The id of the job to query.',
+							'name' => 'id',
+							'type' => 'int',
+							'source' => array('path' => '0'),
+							'optional' => FALSE,
+						),
+					),
+				),
+				'compilerErrors' => array(
+					'help' => 'Get the jobs compiler errors, if any.',
+					'callback' => '_job_compilererrors_rpc',
+					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'job'),
+					'access callback' => 'boa_job_not_deleted_access',
+					'access arguments append' => TRUE,
+					'args' => array(
+						array(
+							'description' => 'The id of the job to query.',
+							'name' => 'id',
+							'type' => 'int',
+							'source' => array('path' => '0'),
+							'optional' => FALSE,
+						),
+					),
+				),
+				'url' => array(
+					'help' => 'The jobs URL.',
+					'callback' => '_job_url_rpc',
+					'access callback' => 'boa_job_not_deleted_access',
+					'access arguments append' => TRUE,
+					'args' => array(
+						array(
+							'description' => 'The id of the job to query.',
+							'name' => 'id',
+							'type' => 'int',
+							'source' => array('path' => '0'),
+							'optional' => FALSE,
+						),
+					),
+				),
+				'publicurl' => array(
+					'help' => 'The jobs public URL.',
+					'callback' => '_job_publicurl_rpc',
+					'access callback' => 'boa_job_not_deleted_access',
+					'access arguments append' => TRUE,
+					'args' => array(
+						array(
+							'description' => 'The id of the job to query.',
+							'name' => 'id',
+							'type' => 'int',
+							'source' => array('path' => '0'),
+							'optional' => FALSE,
+						),
+					),
+				),
+				'output' => array(
+					'help' => 'The jobs output.',
+					'callback' => '_job_output_rpc',
+					'access callback' => 'boa_output_access',
+					'access arguments append' => TRUE,
+					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'job.download'),
+					'args' => array(
+						array(
+							'description' => 'The id of the job to query.',
+							'name' => 'id',
+							'type' => 'int',
+							'source' => array('path' => '0'),
+							'optional' => FALSE,
+						),
+					),
+				),
+				'pagedoutput' => array(
+					'help' => 'The jobs output, paged by start+len offsets.',
+					'callback' => '_job_paged_output_rpc',
+					'access callback' => 'boa_output_access',
+					'access arguments append' => TRUE,
+					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'job.download'),
+					'args' => array(
+						array(
+							'description' => 'The id of the job to query.',
+							'name' => 'id',
+							'type' => 'int',
+							'source' => array('path' => '0'),
+							'optional' => FALSE,
+						),
+						array(
+							'description' => 'The starting offset of the output.',
+							'name' => 'start',
+							'type' => 'int',
+							'source' => array('path' => '1'),
+							'optional' => FALSE,
+						),
+						array(
+							'description' => 'The length of the output.',
+							'name' => 'len',
+							'type' => 'int',
+							'source' => array('path' => '2'),
+							'optional' => FALSE,
+						),
+					),
+				),
+			),
+		),
+	);
+}
+
+function _job_url_rpc($id) {
+	return "http://boa.cs.iastate.edu/boa/index.php?q=boa/job/$id";
+}
+
+function _job_publicurl_rpc($id) {
+	return "http://boa.cs.iastate.edu/boa/index.php?q=boa/job/public/$id";
+}
+
+/**
+ * Implements hook_disable().
+ * Actions that need to happen when this module is disabled.
+ */
+function boa_service_disable() {
+	cache_clear_all('services:methods', 'cache');
+}
+
+/**
+ * Implements hook_enable().
+ * Actions that need to happen when this module is enabled.
+ */
+function boa_service_enable() {
+	cache_clear_all('services:methods', 'cache');
+}
+
+?>
