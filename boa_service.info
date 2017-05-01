@@ -1,7 +1,7 @@
 name = Boa Service
 description = The Boa infrastructure XMLRPC service.
 package = Services - services
-version = 7.x
+version = 7.x-0.2.0
 core = 7.x
 dependencies[] = services
 dependencies[] = boa
