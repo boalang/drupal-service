@@ -278,36 +278,6 @@ function boa_service_services_resources() {
 						),
 					),
 				),
-				'pagedoutput' => array(
-					'help' => 'The jobs output, paged by start+len offsets.',
-					'callback' => '_job_paged_output_rpc',
-					'access callback' => 'boa_output_access',
-					'access arguments append' => TRUE,
-					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'job.download'),
-					'args' => array(
-						array(
-							'description' => 'The id of the job to query.',
-							'name' => 'id',
-							'type' => 'int',
-							'source' => array('path' => '0'),
-							'optional' => FALSE,
-						),
-						array(
-							'description' => 'The starting offset of the output.',
-							'name' => 'start',
-							'type' => 'int',
-							'source' => array('path' => '1'),
-							'optional' => FALSE,
-						),
-						array(
-							'description' => 'The length of the output.',
-							'name' => 'len',
-							'type' => 'int',
-							'source' => array('path' => '2'),
-							'optional' => FALSE,
-						),
-					),
-				),
 			),
 		),
 	);
