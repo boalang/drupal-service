@@ -265,7 +265,7 @@ function boa_service_services_resources() {
 				'output' => array(
 					'help' => 'The jobs output.',
 					'callback' => '_job_output_rpc',
-					'access callback' => 'boa_output_access',
+					'access callback' => 'boa_output_access_rpc',
 					'access arguments append' => TRUE,
 					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'job.download'),
 					'args' => array(
@@ -281,7 +281,7 @@ function boa_service_services_resources() {
 				'outputsize' => array(
 					'help' => 'The size of the jobs output.',
 					'callback' => '_job_output_size_rpc',
-					'access callback' => 'boa_output_access',
+					'access callback' => 'boa_output_access_rpc',
 					'access arguments append' => TRUE,
 					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'job.download'),
 					'args' => array(
