@@ -300,11 +300,11 @@ function boa_service_services_resources() {
 }
 
 function _job_url_rpc($id) {
-	return "http://boa.cs.iastate.edu/boa/index.php?q=boa/job/$id";
+	return "https://boa.cs.iastate.edu/boa/index.php?q=boa/job/$id";
 }
 
 function _job_publicurl_rpc($id) {
-	return "http://boa.cs.iastate.edu/boa/index.php?q=boa/job/public/$id";
+	return "https://boa.cs.iastate.edu/boa/index.php?q=boa/job/public/$id";
 }
 
 /**
