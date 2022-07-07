@@ -294,6 +294,22 @@ function boa_service_services_resources() {
 						),
 					),
 				),
+				'outputhash' => array(
+					'help' => 'The hash of the jobs output. Gives number of bytes used to compute hash.',
+					'callback' => '_job_output_hash_rpc',
+					'access callback' => 'boa_output_access_rpc',
+					'access arguments append' => TRUE,
+					'file' => array('type' => 'inc', 'module' => 'boa', 'name' => 'job.download'),
+					'args' => array(
+						array(
+							'description' => 'The id of the job to query.',
+							'name' => 'id',
+							'type' => 'int',
+							'source' => array('path' => '0'),
+							'optional' => FALSE,
+						),
+					),
+				),
 			),
 		),
 	);
